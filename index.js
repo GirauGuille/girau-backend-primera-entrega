@@ -1,82 +1,45 @@
 class ProductManager {
-    #codeGenerator(codeLength = 15) {
-        const numeros = "0123456789";
-        const letras = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const numYLetras = numeros + letras;
-        let code = "";
-        for (let i = 0; i < codeLength; i++) {
-        const random = Math.floor(Math.random() * numYLetras.length);
-        code += numYLetras.charAt(random);
-        }
-        return code;
-    }
-
-    #idGenerator() {
-        const id =
-        this.products.length === 0
-            ? 1
-            : this.products[this.products.length - 1].id + 1;
-        return id;
-    }
-    
     constructor() {
         this.products = [];
+        this._id = 0;
     }
-    
-    addProduct(title, description, price, thumbnail, stock) {
-        const product = {
-            id: this.#idGenerator(),
-            title: title,
-            description: description,
-            price: price,
-            thumbnail: thumbnail,
-            code: this.#codeGenerator(),
-            stock: stock,
+
+    addProduct(product) {
+        if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
+            console.log('Error: Todos los campos son obligatorios');
+            return;
+        }
+
+        if (this.products.some((p) => p.code === product.code)) {
+            console.log('Error: El código del producto ya existe');
+            return;
+        }
+
+        this._id++;
+        const newProduct = {
+            id: this._id,
+            ...product
         };
-    
-        try {
-        if (!title || !description || !price || !thumbnail || !stock) {
-            throw new Error(
-            `Por favor complete todos los parametros requeridos del producto`
-            );
-        } else {
-            this.products.push(product);
-        }
-        } catch (error) {
-        console.log(`Problema al agregar producto: ${error.message}`);
-        }
+        this.products.push(newProduct);
     }
-    
+
     getProducts() {
-        try {
-        console.log(this.products);
-        } catch (error) {
-        console.log(`Error obteniendo todos los productos: ${error.message}`);
-        }
+        return this.products;
     }
 
     getProductById(id) {
-        try {
-        const idProduct = this.products.filter(product => product.id === id);
-        if (idProduct.length > 0) {
-            console.log(idProduct[0]);
-        } else throw new Error(`Not found`);
-        } catch (error) {
-        console.log(
-            `Problema al buscar producto con el id ${id}: ${error.message}`
-        );
+        const product = this.products.find((p) => p.id === id);
+        if (product) {
+            return product;
+        } else {
+            console.log('Error: Not found');
         }
     }
 }
 
-const girau = new ProductManager();
 
-girau.getProducts();
-girau.addProduct(
-    "prueba 2",
-    "esta es una prueba",
-    500,
-    "sin imagen",
-    50
-);
-girau.getProductById();
+const products1 = new ProductManager();
+
+console.log("product1 (Object):",products1);
+products1.addProduct({ title: 'Mouse', description: 'MOUSE LOGITECH G502 WIRELESS GAMING LIGHTSPEED 910-005566', price: 32000, thumbnail: 'https://www.fullh4rd.com.ar/img/productos/Pics_Prod/mouse-logitech-g502-wireless-gaming-lightspeed-910005566-0.jpg', code: 1, stock: 10 });
+console.log("product1 (getProducts):",products1.getProducts());
